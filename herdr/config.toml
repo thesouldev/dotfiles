@@ -1,0 +1,65 @@
+onboarding = false
+
+[theme]
+name = "gruvbox"
+
+# ============================================
+# Keybindings — ported from ~/.tmux.conf
+# tmux session ↔ herdr workspace
+# tmux window  ↔ herdr tab
+# tmux pane    ↔ herdr pane
+# ============================================
+[keys]
+# Prefix: Ctrl+a (matches tmux `set -g prefix C-a`)
+prefix = "ctrl+a"
+
+# prefix r → reload config (tmux: bind r source-file)
+reload_config = "prefix+r"
+
+# Splits
+split_vertical = "prefix+\\"        # tmux: bind \ split-window -h (side by side)
+split_horizontal = "prefix+minus"   # tmux: bind - split-window -v (top/bottom)
+
+# Tabs (= tmux windows)
+new_tab = "prefix+n"                # tmux: bind n new-window (prompts for name)
+rename_tab = "prefix+comma"         # tmux: bind , rename-window
+previous_tab = "shift+left"         # tmux: bind -n S-Left previous-window
+next_tab = "shift+right"            # tmux: bind -n S-Right next-window
+close_tab = "prefix+shift+x"        # tmux: bind X kill-window
+
+# Workspaces (= tmux sessions)
+workspace_picker = "prefix+s"       # tmux: bind s choose-tree
+settings = "prefix+shift+s"         # moved off prefix+s so the picker can take it (tmux `s`)
+new_workspace = "prefix+shift+n"    # tmux: bind N new-session
+rename_workspace = "prefix+."       # prefix then . renames the workspace
+close_workspace = "prefix+shift+q"  # tmux: bind Q kill-session
+previous_workspace = "shift+up"     # Shift+Up → previous workspace
+next_workspace = "shift+down"       # Shift+Down → next workspace
+
+# Agents
+previous_agent = "ctrl+up"          # Ctrl+Up → previous agent
+next_agent = "ctrl+down"            # Ctrl+Down → next agent
+
+# Panes
+focus_pane_left = "alt+left"        # tmux: bind -n M-Left select-pane -L
+focus_pane_down = "alt+down"        # tmux: bind -n M-Down select-pane -D
+focus_pane_up = "alt+up"            # tmux: bind -n M-Up select-pane -U
+focus_pane_right = "alt+right"      # tmux: bind -n M-Right select-pane -R
+close_pane = "prefix+x"             # tmux: bind x kill-pane
+
+# Unbound to avoid colliding with reload_config on prefix+r
+# (tmux resizes with repeatable prefix+H/J/K/L; herdr has no direct equivalent)
+resize_mode = ""
+
+# prefix c → quick new tab with an auto-generated name (tmux: bind c new-window).
+# The native new_tab action (prefix+n) shows the name prompt; this gives the
+# quick no-prompt variant, since herdr allows only one binding per action.
+[[keys.command]]
+key = "prefix+c"
+type = "shell"
+command = "herdr tab create --focus"
+
+[ui]
+# prefix+n (native new_tab) prompts for a tab name before creating it
+prompt_new_tab_name = true
+agent_panel_scope = "all"
