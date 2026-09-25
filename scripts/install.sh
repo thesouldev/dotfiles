@@ -23,3 +23,7 @@ link() {
 }
 
 link herdr/config.toml "$HOME/.config/herdr/config.toml"
+link git/hooks "$HOME/.githooks"
+
+git config --global core.hooksPath "$HOME/.githooks"
+echo "set git core.hooksPath -> $HOME/.githooks"

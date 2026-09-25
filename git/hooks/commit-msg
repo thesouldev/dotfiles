@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# Global commit-msg hook: one lowercase line, no AI attribution, capped
+# length, and the expected author. Installed via core.hooksPath by
+# scripts/install.sh.
+#
+# Config:
+#   COMMIT_MSG_MAXLEN        max subject length (default 72)
+#   git config hooks.author  required author name (skipped when unset)
+#
+set -eu
+
+msg_file="$1"
+max_len="${COMMIT_MSG_MAXLEN:-72}"
+
+fail() {
+    echo "commit-msg: $1" >&2
+    exit 1
+}
+
+# Drop comment lines and blank lines.
+content=$(grep -vE '^[[:space:]]*#' "$msg_file" | grep -vE '^[[:space:]]*$' || true)
+
+[ -n "$content" ] || fail "empty commit message."
+
+# Leave git-generated messages alone (merge, revert, fixup, squash, amend).
+case "$content" in
+    "Merge "*|"Revert "*|"fixup! "*|"squash! "*|"amend! "*) skip_style=1 ;;
+    *) skip_style=0 ;;
+esac
+
+if [ "$skip_style" -eq 0 ]; then
+    line_count=$(printf '%s\n' "$content" | wc -l | tr -d ' ')
+    [ "$line_count" -eq 1 ] || fail "message must be a single line ($line_count found)."
+
+    if printf '%s' "$content" | grep -q '[[:upper:]]'; then
+        fail "message must be all lowercase."
+    fi
+
+    len=$(printf '%s' "$content" | wc -m | tr -d ' ')
+    [ "$len" -le "$max_len" ] || fail "subject is $len chars, max $max_len."
+fi
+
+if printf '%s' "$content" \
+    | grep -qiE 'claude|anthropic|co-authored-by|generated with|🤖'; then
+    fail "remove AI attribution; keep the message human."
+fi
+
+expected=$(git config --get hooks.author || true)
+if [ -n "$expected" ]; then
+    author=$(git var GIT_AUTHOR_IDENT | sed 's/ <.*//')
+    [ "$author" = "$expected" ] || fail "author is '$author', expected '$expected'."
+fi
+
+# A global core.hooksPath disables .git/hooks, so still run the repo's own
+# commit-msg hook if it has one.
+local_hook="$(git rev-parse --git-dir)/hooks/commit-msg"
+if [ -x "$local_hook" ]; then
+    exec "$local_hook" "$@"
+fi
