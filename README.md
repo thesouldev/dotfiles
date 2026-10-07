@@ -16,6 +16,8 @@ there as `<file>.bak`. Re-running it is safe.
 | --- | --- |
 | `herdr/config.toml` | `~/.config/herdr/config.toml` |
 | `git/hooks/` | `~/.githooks` (global `core.hooksPath`) |
+| `zed/settings.json` | `~/.config/zed/settings.json` |
+| `zed/keymap.json` | `~/.config/zed/keymap.json` |
 
 ## herdr
 
@@ -57,3 +59,15 @@ Caveats:
 - A repo that sets its own `core.hooksPath` (husky, for example) overrides the
   global one, so these hooks do not run there.
 - Bypass once with `git commit --no-verify`.
+## zed
+
+`settings.json` and `keymap.json` are tracked. `prompts/` and `themes/` hold
+local state and are left out.
+
+SSH remote projects (`ssh_connections`) are not tracked because they name
+private hosts. Zed writes them into `settings.json` when you add a remote
+project, so after adding one, check `git diff` before committing.
+
+Zed may replace the symlink with a regular file when it saves settings from the
+UI. Check with `ls -l ~/.config/zed/settings.json` and re-run
+`scripts/install.sh` if it is no longer a symlink.

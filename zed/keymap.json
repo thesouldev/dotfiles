@@ -1,0 +1,9 @@
+[
+  {
+    "context": "GitPanel && ChangesList",
+    "use_key_equivalents": true,
+    "bindings": {
+      "cmd-alt-z": "git::RestoreAndNext"
+    }
+  }
+]

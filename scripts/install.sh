@@ -27,3 +27,5 @@ link git/hooks "$HOME/.githooks"
 
 git config --global core.hooksPath "$HOME/.githooks"
 echo "set git core.hooksPath -> $HOME/.githooks"
+link zed/settings.json "$HOME/.config/zed/settings.json"
+link zed/keymap.json "$HOME/.config/zed/keymap.json"
